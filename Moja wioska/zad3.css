@@ -1,0 +1,67 @@
+body {
+    font-family: 'Amiko', sans-serif;
+}
+
+header {
+    background-color: #ffccff;
+    margin-top: 10px;
+    height: 180px;
+}
+
+#logo {
+    float: left;
+    padding: 10px;
+    width: 130px;
+    text-align: center;
+}
+
+#tytul {
+    float: left;
+    padding: 20px;
+    width: calc(100% - 230px);
+    font-size: 40px;
+font-family: 'Courier New';
+    color: #993366;
+    text-align: center;
+    line-height: 3;
+}
+
+nav {
+    background-color: #FAE3F7;
+    padding: 10px;
+text-align: center;
+ justify-content: center;
+align-content: center;
+}
+
+.wybor {
+    float: left;
+    min-width: 100px;
+    font-size: 14px;
+    padding: 10px;
+    border-right: 3px solid #993366;
+    height: 20px;
+text-align: center;
+margin: 5px; 
+}
+
+.wybor:hover {
+    background: #993366;
+}
+
+main {
+font-size: 30px;
+text-align: center;
+
+   }
+
+   footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 30px;
+    font-size: 30px;
+}
+img{
+filter: drop-shadow(15px 5px 5px #993366);
+}
