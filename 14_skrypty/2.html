@@ -1,0 +1,516 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<SCRIPT LANGUAGE= "JavaScript" type= "text/javascript">
+<!-- Ukrycie przed przeglądarkami nie obsługującymi JavaScriptów
+function ileDni(year, month, day)
+{
+  var date1 = new Date();
+  var date2 = new Date(year, month, day);
+  var diff = date2.getTime() - date1.getTime();
+  var dni = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (dni == 1) return "1 dzień";
+  else return dni + " dni";
+}
+// Koniec kodu JavaScript -->
+</SCRIPT>
+<!--
+This Java Script is free to the domain. All I ask is you send me an
+email to ddelong@csci.csusb.edu to let me know that you will be using it.
+This message must be included with the script if you copy it.
+-->
+<!-- corrected by - Grzegorz Fidler, g_fidler@poczta.onet.pl -->
+<script language="JavaScript">
+<!-- for sucky browsers
+
+Months = new Array(12);
+Months[0] = "Styczeń";
+Months[1] = "Luty";
+Months[2] = "Marzec";
+Months[3] = "Kwiecień";
+Months[4] = "Maj";
+Months[5] = "Czerwiec";
+Months[6] = "Lipiec";
+Months[7] = "Sierpień";
+Months[8] = "Wrzesień";
+Months[9] = "Październik";
+Months[10] = "Listopad";
+Months[11] = "Grudzień";
+
+function PadSpaces(TheString)
+{
+	var Spaces = "             ";
+	len = Math.round((9 - TheString.length)/2);
+
+	return Spaces.substring(0,len) + TheString;
+}
+
+function NumLeapYears(StartYear, EndYear)
+{
+ 	var LeapYears, i;
+
+ 	if (EndYear >= StartYear){
+ 		for(LeapYears = 0; StartYear <= EndYear; StartYear++)
+ 		if (IsLeapYear(StartYear)) LeapYears++;
+	}else{
+	for(LeapYears = 0; EndYear <= StartYear; EndYear++)
+ 		if (IsLeapYear(EndYear)) LeapYears++;
+	}
+ 	return LeapYears;
+}
+
+function IsLeapYear(Year) 
+{
+	if(Math.round(Year/4) == Year/4){
+		if(Math.round(Year/100) == Year/100){
+			if(Math.round(Year/400) == Year/400)
+				return true;
+			else return false;
+		}else return true;
+	}
+	return false;
+}
+
+function Trim(TheString)
+{
+	var len;
+
+	len = TheString.length;
+ 	while(TheString.substring(0,1) == " "){ //trim left
+ 		TheString = TheString.substring(1, len);
+  		len = TheString.length;
+	}
+
+ 	while(TheString.substring(len-1, len) == " "){ //trim right
+ 		TheString = TheString.substring(0, len-1);
+  		len = TheString.length;
+ 	}
+ 	return TheString;
+}
+
+function DetermineMonthIdx()
+{
+	var i, month, month_s, len;
+
+
+	month = Trim(document.calform.elements[4].value);
+	len = month.length;
+
+	for( i = 0; i <12; i++){
+    		month_s = Months[i].substring(0,len);
+		if (month_s.toUpperCase() == month.toUpperCase())
+        		return (i);
+  	}
+  	return -1;
+}
+
+function FindNewYearStartingDay(Year)
+{
+ 	var LeapYears, Years, Day;
+ 
+ 	LeapYears = NumLeapYears(1995, Year); 
+
+ 	if  (Year >=1995)
+ 		Years = (Year -1995)+LeapYears;
+ 	else	Years = (Year -1995)-LeapYears; 
+
+ 	if  (Year >=1995)
+		Day = Math.round(((Years/7 - Math.floor(Years/7))*7)+.1);
+ 	else	Day = Math.round(((Years/7 -  Math.ceil(Years/7))*7)-.1);
+	
+	if (Year >=1995){ 
+ 		if(IsLeapYear(Year)) Day--;
+ 	}else Day += 7;
+
+ 	if(Day < 0) Day = 6;
+ 	if(Day > 6) Day = 0;
+ 	return Day;
+}
+
+function FindNumDaysInMonth(Year, Month)
+{
+ 	if(Month == 1){
+   		if(IsLeapYear(Year)) return 29;
+   		else return 28;
+ 	}else{	
+   		if(Month >6) Month++;
+   		if(Month/2 == Math.round(Month/2))  return 31;
+ 	}
+ return 30;		
+}
+
+function FindMonthStartDay(NewYearDay, Year, Month)
+{
+  	var MonthStartDay;
+
+  	AddArray = new Array(12);
+
+  	AddArray[0]=0;AddArray[1]=3;AddArray[2]=3;AddArray[3]=6;
+	AddArray[4]=1;AddArray[5]=4;AddArray[6]=6;AddArray[7]=2;
+	AddArray[8]=5;AddArray[9]=0;AddArray[10]=3;AddArray[11]=5;
+
+  	MonthStartDay = NewYearDay + AddArray[Month];
+  	if(IsLeapYear(Year)  && (Month ) > 1) MonthStartDay ++;
+  
+  	if (MonthStartDay > 6) MonthStartDay -= 7;
+
+  	return MonthStartDay; 
+}
+
+function  FillCalendar()
+{
+  	var Year, Month, Midx, NewYearDay, MonthStartDay;
+	var NumDaysInMonth, i, t;
+
+  	Year = parseFloat(document.calform.elements[1].value);
+  	Month = document.calform.elements[4].value;
+
+  	Midx  =  DetermineMonthIdx();
+  	if (Midx == -1){
+   		alert ("Can't recognize that month");
+   		return;
+  	}
+
+  	NewYearDay = FindNewYearStartingDay(Year);
+  	MonthStartDay = FindMonthStartDay(NewYearDay, Year,  Midx);
+  	NumDaysInMonth = FindNumDaysInMonth(Year, Midx);  
+
+  	for(i = 6;  i < 43;  i++){
+		t = i-5-MonthStartDay;
+		if ( t >= 1  &&  t <= NumDaysInMonth)
+			document.calform.elements[i].value =t;
+		else document.calform.elements[i].value = "";
+  	}
+}
+
+function IncDecYear(val)
+{
+	var valNum = parseInt(val);
+	var valNum2 = parseInt(document.calform.elements[1].value)
+	document.calform.elements[1].value = valNum2 + valNum;
+
+	FillCalendar()
+}
+
+function IncDecMonth(val)
+{
+	var valNum = parseInt(val);
+  	var Midx  =  DetermineMonthIdx();
+	
+	Midx += valNum;
+	if(Midx > 11) Midx = 0;
+	if(Midx < 0)  Midx = 11;
+
+	
+	document.calform.elements[4].value = PadSpaces(Months[Midx]);
+
+	FillCalendar()
+}
+
+// -->
+</script>
+<SCRIPT LANGUAGE= "JavaScript" type= "text/javascript">
+<!-- Ukrycie przed przeglądarkami nie obsługującymi JavaScriptów
+var speed = 20;
+var speedStep = 1;
+var ltop;
+var bottom;
+var direction = 'down';
+var id;
+var iter = 4;
+function ustaw()
+{
+  document.getElementById('ball').style.left = 0;
+  ltop = 0;
+  bottom = document.body.clientHeight - 50;
+}
+y = 0;
+x = 0;
+function start()
+{
+  layer = document.getElementById('ball');
+  y = parseInt(layer.style.top);
+  if (y < bottom && direction == 'down'){
+    y += speedStep++;
+    if (y > bottom){
+      layer.style.top = bottom;
+    }
+    else{
+      layer.style.top = y;
+    }
+    id = setTimeout('start()', speed);
+    return;
+  }
+  else if (y >= bottom && direction == 'down'){
+    direction = 'up';
+    ltop = ltop + Math.ceil((bottom - ltop) / iter);
+    if (ltop >= bottom){
+      clearTimeout(id);
+      return;
+    }
+    id = setTimeout('start()', speed);
+    return;
+  }
+  else if (y > ltop && direction == 'up'){
+    y -= speedStep--;
+    if (y < ltop){
+      layer.style.top = ltop;
+    }
+    else{
+      layer.style.top = y;
+    }
+    id = setTimeout('start()', speed);
+    return;
+  }
+  else if (y <= ltop && direction == 'up'){
+    direction = 'down';
+    if (speedStep%3 == 0) speedStep--;
+    id = setTimeout('start()', speed);
+  }
+}
+// Koniec kodu JavaScript -->
+</SCRIPT>
+</HEAD>
+<BODY onLoad='ustaw();start();'>
+<SCRIPT LANGUAGE= "JavaScript" type= "text/javascript">
+<!-- Ukrycie przed przeglądarkami nie obsługującymi JavaScriptów
+for (i = 0; i < 1;i++){
+  str = '<DIV ID="ball" ';
+  str += 'style = "visibility: visible; ';
+  str += 'width=50px; ';
+  str += 'heigth=45px; ';
+  str += 'position: absolute; ';
+  str += 'top: 1; ';
+  str += 'left: 1;">';
+  str += '<IMG SRC="kot.jpg">';
+  str += '</DIV>';
+  document.write(str);
+}
+// Koniec kodu JavaScript -->
+</SCRIPT>
+<H1 align="center">Kotyy<H1>
+</HEAD>
+<BODY>
+<H2>Jeszcze tylko
+<SCRIPT LANGUAGE= "JavaScript" type= "text/javascript">
+<!-- Ukrycie przed przeglądarkami nie obsługującymi JavaScriptów
+document.write(ileDni(2025, 1, 1));
+// Koniec kodu JavaScript -->
+</SCRIPT>
+do 1 stycznia 2025 roku.
+<br>
+<SCRIPT LANGUAGE="JavaScript">
+<!-- // skrypt pobrano z http://szablony.freeware.info.pl
+miesiac = new Array(12)
+miesiac[0] = "stycznia "
+miesiac[1] = "lutego "
+miesiac[2] = "marca "
+miesiac[3] = "kwietnia "
+miesiac[4] = "maja "
+miesiac[5] = "czerwca "
+miesiac[6] = "lipca "
+miesiac[7] = "sierpnia "
+miesiac[8] = "września "
+miesiac[9] = "października "
+miesiac[10] = "listopada "
+miesiac[11] = "grudnia "
+dzien = new Array(7)
+dzien[0] = "niedziela "
+dzien[1] = "poniedziałek "
+dzien[2] = "wtorek "
+dzien[3] = "środa "
+dzien[4] = "czwartek "
+dzien[5] = "piątek "
+dzien[6] = "sobota "
+function podaj_date(){
+var Dzisiaj = new Date()
+var Tygodnia = Dzisiaj.getDay()
+var Miesiac = Dzisiaj.getMonth()
+var Dnia = Dzisiaj.getDate()
+var Rok = Dzisiaj.getFullYear()
+if(Rok <= 99) Rok += 1900
+return dzien[Tygodnia] + "," + " " + Dnia + " " + miesiac[Miesiac] + ", " + Rok +"r." }
+//-->
+</SCRIPT>
+<SCRIPT>document.write("Dzisiaj jest " + podaj_date())</SCRIPT>
+<BODY
+  onLoad = "alert ('To jest czesc zadania')"
+>
+<H1><CENTER>
+Zadanie
+</H1></CENTER>
+
+<script>
+<!--
+/*
+Count up from any date script-
+By Website Abstraction (www.wsabstract.com)
+Over 200+ free scripts here!
+*/
+
+var montharray=new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+
+function countup(yr,m,d){
+var today=new Date()
+var todayy=today.getFullYear()
+var todaym=today.getMonth()
+var todayd=today.getDate()
+var todaystring=montharray[todaym]+" "+todayd+", "+todayy
+var paststring=montharray[m-1]+" "+d+", "+yr
+var difference=(Math.round((Date.parse(todaystring)-Date.parse(paststring))/(24*60*60*1000))*1)
+difference+=" dni"
+document.write("Rok szkolny 2023/24 trwa juz "+difference+"!")
+}
+//enter the count up date using the format year/month/day
+countup(2023,09,1)
+//-->
+</script>
+<script language="javascript">
+<!--W3e JAVAscript Preset
+var timerID = null;
+var timerRunning = false;
+function stopclock()
+{
+    if(timerRunning)
+        clearTimeout(timerID)
+    timerRunning = false;
+}
+
+function startclock()
+{
+    stopclock();
+    showtime();
+}
+
+function showtime()
+{
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    var seconds = now.getSeconds();
+    var timeValue = "" + ((hours > 12) ? hours - 12 : hours);
+    timeValue  += ((minutes < 10) ? ":0" : ":") + minutes;
+    timeValue  += ((seconds < 10) ? ":0" : ":") + seconds;
+    timeValue  += (hours >= 12) ? " P.M." : " A.M.";
+    document.clock.face.value = timeValue;
+    timerID = setTimeout("showtime()",1000);
+    timerRunning = true;
+}
+//-->
+</script>
+
+<form name="clock" onSubmit="0">
+  <input type="text" name="face" size="24">
+</form>
+
+<script>startclock();</script>
+<table border=1 bgcolor="#000000" cellpadding=1 cellspacing=1><tr><td
+align=center>
+<table border=0  cellpadding=0 cellspacing=0>
+<form name="calform">
+<tr>
+	<td align=center cellpadding=0 cellspacing=0 bgcolor="#000000"><input
+type=button value="<<" onClick="IncDecYear(-1)"></td>
+	<th cellpadding=0 cellspacing=0 bgcolor="#aaaaaa" colspan=5
+align=center><input size=4 type=text value="1993"></th>
+	<td align=center cellpadding=0 cellspacing=0 bgcolor="#000000"><input
+type=button value=">>" onClick="IncDecYear(1)"></td>
+</tr>
+<tr>
+	<td align=center bgcolor="#000000"><input type=button value="<<"
+onClick="IncDecMonth(-1)"></td>
+	<th bgcolor="#aaaaaa" colspan=5 align=center><input size=9 type=text
+value=" January "></th>
+	<td align=center bgcolor="#000000"><input type=button value=">>"
+onClick="IncDecMonth(1)"></td>
+</tr>
+<tr>
+	<th  bgcolor="#ffcccc">N</td>
+	<th  bgcolor="#ccccff">P</td>
+	<th  bgcolor="#ccccff">W</td>
+	<th  bgcolor="#ccccff">Ś</td>
+	<th  bgcolor="#ccccff">C</td>
+	<th  bgcolor="#ccccff">P</td>
+	<th  bgcolor="#ccccff">S</td>
+</tr>
+<tr>
+	<td  bgcolor="#ffcccc"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+</tr>
+<tr>
+	<td  bgcolor="#ffcccc"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+</tr>
+<tr>
+	<td  bgcolor="#ffcccc"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+</tr>
+<tr>
+	<td  bgcolor="#ffcccc"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+</tr>
+<tr>
+	<td  bgcolor="#ffcccc"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#ccccff" ><input type=text size=2></td>
+</tr>
+<tr>
+	<td  bgcolor="#ffcccc"><input type=text size=2></td>
+	<td  bgcolor="#ccccff"><input type=text size=2></td>
+	<td  bgcolor="#aaaaaa" colspan=5><input type=text></td>
+</tr>
+
+</form>
+</table>
+</td></tr></table>
+
+<script language="JavaScript">
+<!-- 
+//include this script segment if you want to set the calendar to today's date.
+//this MUST come after the tabled form which contains the calendar
+
+//set calendar to today's date
+	myDate = new Date();
+	var Month = parseInt(myDate.getMonth());
+	
+	document.calform.elements[1].value = 0 + myDate.getYear();
+	document.calform.elements[4].value = PadSpaces(Months[Month]);
+
+	document.calform.elements[43].value = "Dziś jest: " + 
+		myDate.getDate() + " " + Months[Month].substring(0,3)
+		 + ", " + (0 + myDate.getYear());
+
+	FillCalendar();
+
+// -->
+</script>
+
+
+
+</BODY>
+
+</HTML>
