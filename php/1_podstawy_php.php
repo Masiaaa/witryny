@@ -2,11 +2,14 @@
 <html lang="pl">
 <head>
 	<meta charset="utf-8">
-	<title>moja galeria</title>
+	<title>Podstawy php </title>
 	<meta name="keywords" content="szablon strony">
-	<meta name="description" content="Galeria">
+	<meta name="description" content="Podstawy">
 	<meta name="author" content="Maria Libera">
 </head>
 <body>
+<?php
+print("PHP");
+?>
 </body>
 </html>
